@@ -1,4 +1,4 @@
-// ================== الإعدادات (غيّرها براحتك) ==================
+// ================== الإعدادات (غيّريها براحتك) ==================
 
 // اليوم والشهر المميز
 const CORRECT_DAY = 13;
@@ -14,9 +14,10 @@ const loveLetterText = `حبيبتي...
 
 // الصور والكلام اللي تحتها (ضيف أو امسح براحتك)
 const photos = [
-  { src: "images/1.jpg", text: "أول صورة لينا 💕 اكتب هنا أي كلام تحبه" },
-  { src: "images/2.jpg", text: "اليوم ده مبنساهوش أبدًا 🌹" },
-  { src: "images/3.jpg", text: "معاكي كل يوم أحلى من اللي قبله ❤" }
+  { src: "images/1.jpg", text: "ياختي حلوه سكرر 🙈💖" },
+  { src: "images/2.jpg", text: "يلهوي علي الضحكه ياناسسسس🥹🥹💖" },
+  { src: "images/3.jpg", text: "اقدر علي اي حاجه في الدنيا الا عيونك 🥲🥲💖" },
+  { src: "images/4.jpg", text: "أجمل ذكرياتنا مع بعض 💖" }
 ];
 
 // ================== قفل وفتح السكرول ==================
@@ -51,7 +52,6 @@ window.addEventListener("keydown", function (e) {
 const dayInput = document.getElementById("day-input");
 const monthInput = document.getElementById("month-input");
 
-// أرقام بس + الانتقال التلقائي للشهر
 dayInput.addEventListener("input", function () {
   dayInput.value = dayInput.value.replace(/\D/g, "");
   if (dayInput.value.length === 2) monthInput.focus();
@@ -80,41 +80,12 @@ function checkDate() {
     document.getElementById("login-screen").classList.add("hidden");
     document.getElementById("main-page").classList.remove("hidden");
     window.scrollTo(0, 0);
-    lockScroll();
-    startTypewriter();
   } else {
     errorMsg.textContent = "غلط ياروحي جربي تاني 💖";
     box.classList.remove("shake");
-    void box.offsetWidth; // إعادة تشغيل الحركة
+    void box.offsetWidth;
     box.classList.add("shake");
   }
-}
-
-// ================== كتابة الرسالة ==================
-function startTypewriter() {
-  const el = document.getElementById("love-letter");
-  let i = 0;
-  el.textContent = "";
-
-  function type() {
-    if (i < loveLetterText.length) {
-      el.textContent += loveLetterText.charAt(i);
-      i++;
-      if (i % 8 === 0) {
-        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
-      }
-      setTimeout(type, 35);
-    } else {
-      finishLetter();
-    }
-  }
-  type();
-}
-
-function finishLetter() {
-  document.getElementById("after-letter").classList.remove("hidden");
-  document.getElementById("scroll-hint").classList.remove("hidden");
-  unlockScroll();
 }
 
 // ================== الصور ==================
@@ -150,8 +121,10 @@ document.querySelectorAll(".reveal").forEach(function (el) {
 const song = document.getElementById("song");
 const playBtn = document.getElementById("play-btn");
 const disc = document.getElementById("disc");
-const bar = document.getElementById("bar");
+const seek = document.getElementById("seek");
 const timeEl = document.getElementById("time");
+const durationEl = document.getElementById("duration");
+let seeking = false;
 
 function formatTime(s) {
   const m = Math.floor(s / 60);
@@ -159,18 +132,17 @@ function formatTime(s) {
   return m + ":" + (sec < 10 ? "0" : "") + sec;
 }
 
+function setFill() {
+  seek.style.setProperty("--fill", seek.value + "%");
+}
+
 function togglePlay() {
   if (song.paused) {
     song.play().then(function () {
       playBtn.textContent = "⏸";
       disc.classList.add("spinning");
-    }).catch(function (err) {
-      console.log("خطأ الأغنية:", err.name, "| كود:", song.error ? song.error.code : "مفيش");
-      if (song.error && song.error.code === 4) {
-        timeEl.textContent = "الملف مش موجود أو صيغته غلط";
-      } else {
-        timeEl.textContent = "❌";
-      }
+    }).catch(function () {
+      timeEl.textContent = "❌";
     });
   } else {
     song.pause();
@@ -178,25 +150,73 @@ function togglePlay() {
     disc.classList.remove("spinning");
   }
 }
+
+song.addEventListener("loadedmetadata", function () {
+  durationEl.textContent = formatTime(song.duration);
+});
+
 song.addEventListener("timeupdate", function () {
+  if (!song.duration || seeking) return;
+  seek.value = (song.currentTime / song.duration) * 100;
+  setFill();
+  timeEl.textContent = formatTime(song.currentTime);
+});
+
+seek.addEventListener("input", function () {
+  seeking = true;
+  setFill();
   if (song.duration) {
-    bar.style.width = (song.currentTime / song.duration) * 100 + "%";
-    timeEl.textContent = formatTime(song.currentTime);
+    timeEl.textContent = formatTime((seek.value / 100) * song.duration);
   }
+});
+
+seek.addEventListener("change", function () {
+  if (song.duration) {
+    song.currentTime = (seek.value / 100) * song.duration;
+  }
+  seeking = false;
 });
 
 song.addEventListener("ended", function () {
   playBtn.textContent = "▶";
   disc.classList.remove("spinning");
-  bar.style.width = "0%";
+  seek.value = 0;
+  setFill();
   timeEl.textContent = "0:00";
 });
 
-function seekSong(e) {
-  if (!song.duration) return;
-  const rect = document.getElementById("progress").getBoundingClientRect();
-  const ratio = (e.clientX - rect.left) / rect.width;
-  song.currentTime = ratio * song.duration;
+// ================== فتح الرسالة وكتابتها ==================
+function openLetter() {
+  document.getElementById("open-letter-wrap").classList.add("hidden");
+  document.getElementById("letter-section").classList.remove("hidden");
+  lockScroll();
+  startTypewriter();
+}
+
+function startTypewriter() {
+  const el = document.getElementById("love-letter");
+  let i = 0;
+  el.textContent = "";
+
+  function type() {
+    if (i < loveLetterText.length) {
+      el.textContent += loveLetterText.charAt(i);
+      i++;
+      if (i % 8 === 0) {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
+      }
+      setTimeout(type, 35);
+    } else {
+      finishLetter();
+    }
+  }
+  type();
+}
+
+function finishLetter() {
+  document.getElementById("final").classList.remove("hidden");
+  unlockScroll();
+  window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
 }
 
 // ================== القلوب والنجوم ==================
