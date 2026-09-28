@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>احلي يوم في العمر💖</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="hearts-bg"></div>
+
+  <!-- شاشة تسجيل الدخول -->
+  <div class="screen" id="login-screen">
+    <div class="card">
+      <h1>💌 قبل ما تدخلي...</h1>
+      <p>في هدية مستنياكي جوا ،يارب تعجبك❤️ ✨</p>
+      <input type="password" id="password-input" placeholder="اليوم المميز ❤️">
+      <button onclick="checkPassword()">ادخلي 💖</button>
+      <p id="error-msg" class="error"></p>
+    </div>
+  </div>
+
+  <!-- شاشة الرسالة -->
+  <div class="screen hidden" id="message-screen">
+    <div class="card">
+      <h1>🎉 كل سنة وانتي طيبه يا حياتي</h1>
+      <div class="letter-box">
+        <div id="love-letter" class="typewriter"></div>
+      </div>
+      <button id="surprise-btn" class="hidden" onclick="showGallery()">اضغطي هنا لمفاجأة 🎁</button>
+    </div>
+
+  </div>
+
+  <!-- شاشة الصور -->
+  <div class="screen hidden" id="gallery-screen">
+    <div class="card">
+      <h1>📸 ذكرياتنا الحلوة</h1>
+
+      <div class="photo-frame">
+        <img id="photo" src="images/1.jpg" alt="ذكرى" onclick="openLightbox()">
+      </div>
+
+      <p id="photo-caption" class="caption"></p>
+
+      <div class="gallery-controls">
+  <button id="prev-btn" onclick="prevPhoto()">◀ اللي قبلها</button>
+  <span id="photo-counter"></span>
+  <button id="next-btn" onclick="nextPhoto()">اللي بعدها ▶</button>
+</div>
+    </div>
+  </div>
+  <!-- عرض الصورة بالزوم -->
+<div id="lightbox" class="hidden">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <div class="lightbox-controls">
+    <button onclick="zoomOut()">➖</button>
+    <button onclick="resetZoom()">↺</button>
+    <button onclick="zoomIn()">➕</button>
+  </div>
+  <div id="lightbox-area">
+    <img id="lightbox-img" src="" alt="ذكرى مكبرة">
+  </div>
+</div>
+<!-- الموسيقى -->
+<audio id="bg-music" src="audio/music.mp3" loop></audio>
+<button id="music-btn" class="hidden" onclick="toggleMusic()">🔊</button>
+  <script src="script.js"></script>
+</body>
+</html>
