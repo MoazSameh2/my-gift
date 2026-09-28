@@ -15,8 +15,8 @@
   <div class="screen" id="login-screen">
     <div class="card">
       <h1>💌 قبل ما تدخلي...</h1>
-      <p>في هدية مستنياكي جوا ، بحبك 💖</p>
-      <p class="date-hint">اكتبي اليوم المميز 💖</p>
+      <p>في هدية مستنياكي جوا💖</p>
+      <p class="date-hint">اكتبي تاريخ النهارده 💖</p>
 
       <div class="date-inputs" id="date-inputs">
         <div class="date-box">
@@ -38,53 +38,58 @@
   <!-- الصفحة الرئيسية -->
   <main id="main-page" class="hidden">
 
-    <!-- الرسالة -->
+    <!-- الصور -->
     <section class="section">
-      <div class="card">
-        <h1>هديه بسيطه مني ليكي ياحببتي 💖</h1>
-        <div id="love-letter" class="letter"></div>
-      </div>
-      <div id="scroll-hint" class="scroll-hint hidden">⬇ كملي لتحت، لسه في حاجات ليكي</div>
+      <h2 class="section-title reveal">صور المزه بتاعتي 🙈💖</h2>
+      <div id="gallery"></div>
     </section>
 
-    <!-- اللي بيظهر بعد ما الرسالة تخلص -->
-    <div id="after-letter" class="hidden">
+    <!-- كارت الموسيقى -->
+    <section class="section">
+      <div class="music-card reveal">
+        <div class="disc" id="disc">🎵</div>
+        <p class="music-label">الأغنية اللي كل ما بسمعها بتفتكرني بيكي 💖</p>
+        <h3 id="song-title">Kelma 💖</h3>
+        <p id="song-artist" class="song-artist">Ramy Sabry</p>
 
-      <!-- الصور -->
-      <section class="section">
-        <h2 class="section-title reveal">📸 ذكرياتنا الحلوة</h2>
-        <div id="gallery"></div>
-      </section>
+        <audio id="song" src="audio/song.mp3" preload="metadata"></audio>
 
-      <!-- كارت الموسيقى -->
-      <section class="section">
-        <div class="music-card reveal">
-          <div class="disc" id="disc">🎵</div>
-          <p class="music-label">الأغنية اللي كل ما بسمعها بتفتكرني بيكي 💖</p>
-          <h3 id="song-title">Kelma 💖</h3>
-          <p id="song-artist" class="song-artist">Ramy Sabry</p>
-
-          <audio id="song" src="audio/song.mp3" preload="none"></audio>
-
-          <div class="player">
-            <button id="play-btn" onclick="togglePlay()">▶</button>
-            <div class="progress" id="progress" onclick="seekSong(event)">
-              <div class="bar" id="bar"></div>
+        <div class="player">
+          <button id="play-btn" onclick="togglePlay()">▶</button>
+          <div class="seek-wrap">
+            <input type="range" id="seek" min="0" max="100" step="0.1" value="0">
+            <div class="times">
+              <span id="time">0:00</span>
+              <span id="duration">0:00</span>
             </div>
-            <span id="time">0:00</span>
           </div>
-
-          <p class="song-note">اكتر اغنيه بتفكرني بينا عشان احنا مش عشره بس يومين فعلا 💕💌</p>
         </div>
-      </section>
 
-      <!-- الختام -->
-      <section class="section end reveal">
-        <h2>أنتي أجمل هدية في حياتي 🌹</h2>
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ ارجعي لفوق</button>
-      </section>
+        <p class="song-note">اكتر اغنيه بتفكرني بينا عشان احنا مش عشره بس يومين فعلا 💕💌</p>
+      </div>
+    </section>
 
-    </div>
+    <!-- الرسالة (آخر حاجة في الصفحة) -->
+    <section class="section end">
+
+      <div id="open-letter-wrap" class="reveal">
+        <p class="open-hint">في رسالة أخيرة مستنياكي 💌</p>
+        <button id="open-letter-btn" onclick="openLetter()">💌 افتحي الرسالة</button>
+      </div>
+
+      <div id="letter-section" class="hidden">
+        <div class="card">
+          <h1> بحبك 💖</h1>
+          <div id="love-letter" class="letter"></div>
+        </div>
+
+        <div id="final" class="final reveal hidden">
+          <h2>يارب ياحببتي تكون الهديه عجبتك ياحببتي ♥️♥️</h2>
+          <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ ارجعي لفوق</button>
+        </div>
+      </div>
+
+    </section>
   </main>
 
   <!-- عرض الصورة بالزوم -->
