@@ -1,50 +1,205 @@
-const CORRECT_PASSWORD = "13122008";
+// ================== الإعدادات (غيّرها براحتك) ==================
 
+// اليوم والشهر المميز
+const CORRECT_DAY = 13;
+const CORRECT_MONTH = 12;
+
+// الرسالة
 const loveLetterText = `حبيبتي...
 النهارده يوم مميز، لأنه يوم ميلادك انتِ.
 كل ما بيعدي وقت وانا حاسس إني أسعد وأنا جنبك.
 ضحكتك بتنور يومي، ووجودك بيريحني.
-يارب دايمًا أشوفك مبسوطة وكل أحلامك تتحقق. كل سنة وانتِ أحلى حاجة حصلت في حياتي كل سنه وانتي في حياتي
- كل سنه وانتي مليه الدنيا عليه وماليه عيني
- كل سنه وانتي في حياتي ومفرحاني العمر كلو ياحببتي 💖 
-بحبك من كل قلبي، وكل سنة وانتي طيبة يا حياتي.`;
+يارب دايمًا أشوفك مبسوطة وكل أحلامك تتحقق.
+كل سنة وانتِ أحلى حاجة حصلت في حياتي 💕`;
 
-function checkPassword() {
-  const input = document.getElementById("password-input").value.trim();
+// الصور والكلام اللي تحتها (ضيف أو امسح براحتك)
+const photos = [
+  { src: "images/1.jpg", text: "أول صورة لينا 💕 اكتب هنا أي كلام تحبه" },
+  { src: "images/2.jpg", text: "اليوم ده مبنساهوش أبدًا 🌹" },
+  { src: "images/3.jpg", text: "معاكي كل يوم أحلى من اللي قبله ❤" }
+];
+
+// ================== قفل وفتح السكرول ==================
+let locked = false;
+
+function lockScroll() {
+  locked = true;
+  document.documentElement.classList.add("locked");
+  document.body.classList.add("locked");
+}
+
+function unlockScroll() {
+  locked = false;
+  document.documentElement.classList.remove("locked");
+  document.body.classList.remove("locked");
+}
+
+window.addEventListener("touchmove", function (e) {
+  if (locked) e.preventDefault();
+}, { passive: false });
+
+window.addEventListener("wheel", function (e) {
+  if (locked) e.preventDefault();
+}, { passive: false });
+
+window.addEventListener("keydown", function (e) {
+  const keys = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", "End", "Home", " "];
+  if (locked && keys.includes(e.key)) e.preventDefault();
+});
+
+// ================== شاشة الدخول ==================
+const dayInput = document.getElementById("day-input");
+const monthInput = document.getElementById("month-input");
+
+// أرقام بس + الانتقال التلقائي للشهر
+dayInput.addEventListener("input", function () {
+  dayInput.value = dayInput.value.replace(/\D/g, "");
+  if (dayInput.value.length === 2) monthInput.focus();
+});
+
+monthInput.addEventListener("input", function () {
+  monthInput.value = monthInput.value.replace(/\D/g, "");
+});
+
+monthInput.addEventListener("keydown", function (e) {
+  if (e.key === "Backspace" && monthInput.value === "") dayInput.focus();
+  if (e.key === "Enter") checkDate();
+});
+
+dayInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") checkDate();
+});
+
+function checkDate() {
+  const d = parseInt(dayInput.value, 10);
+  const m = parseInt(monthInput.value, 10);
   const errorMsg = document.getElementById("error-msg");
+  const box = document.getElementById("date-inputs");
 
-  if (input === CORRECT_PASSWORD) {
+  if (d === CORRECT_DAY && m === CORRECT_MONTH) {
     document.getElementById("login-screen").classList.add("hidden");
-    document.getElementById("message-screen").classList.remove("hidden");
-    startMusic();
+    document.getElementById("main-page").classList.remove("hidden");
+    window.scrollTo(0, 0);
+    lockScroll();
     startTypewriter();
   } else {
-    errorMsg.textContent = "كلمة السر غلط، جربي تاني 💔";
+    errorMsg.textContent = "غلط ياروحي جربي تاني 💖";
+    box.classList.remove("shake");
+    void box.offsetWidth; // إعادة تشغيل الحركة
+    box.classList.add("shake");
   }
 }
 
+// ================== كتابة الرسالة ==================
 function startTypewriter() {
   const el = document.getElementById("love-letter");
   let i = 0;
   el.textContent = "";
-  function type() {
-  if (i < loveLetterText.length) {
-    el.textContent += loveLetterText.charAt(i);
-    i++;
-    document.querySelector(".letter-box").scrollTop = document.querySelector(".letter-box").scrollHeight;
-    setTimeout(type, 35);
-  } else {
-    document.getElementById("surprise-btn").classList.remove("hidden");
-  }
 
+  function type() {
+    if (i < loveLetterText.length) {
+      el.textContent += loveLetterText.charAt(i);
+      i++;
+      if (i % 8 === 0) {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
+      }
+      setTimeout(type, 35);
+    } else {
+      finishLetter();
+    }
   }
   type();
 }
-function showSurprise() {
-  document.getElementById("surprise").classList.remove("hidden");
+
+function finishLetter() {
+  document.getElementById("after-letter").classList.remove("hidden");
+  document.getElementById("scroll-hint").classList.remove("hidden");
+  unlockScroll();
 }
 
-// حركة القلوب في الخلفية
+// ================== الصور ==================
+const gallery = document.getElementById("gallery");
+
+photos.forEach(function (p) {
+  const fig = document.createElement("figure");
+  fig.className = "memory reveal";
+  fig.innerHTML =
+    '<div class="photo-frame"><img src="' + p.src + '" alt="ذكرى" loading="lazy"></div>' +
+    '<figcaption class="caption">' + p.text + '</figcaption>';
+  fig.querySelector("img").addEventListener("click", function () {
+    openLightbox(p.src);
+  });
+  gallery.appendChild(fig);
+});
+
+// ================== ظهور العناصر واحدة واحدة ==================
+const observer = new IntersectionObserver(function (entries) {
+  entries.forEach(function (entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible");
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll(".reveal").forEach(function (el) {
+  observer.observe(el);
+});
+
+// ================== كارت الموسيقى ==================
+const song = document.getElementById("song");
+const playBtn = document.getElementById("play-btn");
+const disc = document.getElementById("disc");
+const bar = document.getElementById("bar");
+const timeEl = document.getElementById("time");
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ":" + (sec < 10 ? "0" : "") + sec;
+}
+
+function togglePlay() {
+  if (song.paused) {
+    song.play().then(function () {
+      playBtn.textContent = "⏸";
+      disc.classList.add("spinning");
+    }).catch(function (err) {
+      console.log("خطأ الأغنية:", err.name, "| كود:", song.error ? song.error.code : "مفيش");
+      if (song.error && song.error.code === 4) {
+        timeEl.textContent = "الملف مش موجود أو صيغته غلط";
+      } else {
+        timeEl.textContent = "❌";
+      }
+    });
+  } else {
+    song.pause();
+    playBtn.textContent = "▶";
+    disc.classList.remove("spinning");
+  }
+}
+song.addEventListener("timeupdate", function () {
+  if (song.duration) {
+    bar.style.width = (song.currentTime / song.duration) * 100 + "%";
+    timeEl.textContent = formatTime(song.currentTime);
+  }
+});
+
+song.addEventListener("ended", function () {
+  playBtn.textContent = "▶";
+  disc.classList.remove("spinning");
+  bar.style.width = "0%";
+  timeEl.textContent = "0:00";
+});
+
+function seekSong(e) {
+  if (!song.duration) return;
+  const rect = document.getElementById("progress").getBoundingClientRect();
+  const ratio = (e.clientX - rect.left) / rect.width;
+  song.currentTime = ratio * song.duration;
+}
+
+// ================== القلوب والنجوم ==================
 function createHeart() {
   const heart = document.createElement("div");
   heart.classList.add("heart");
@@ -53,60 +208,29 @@ function createHeart() {
   heart.style.fontSize = 15 + Math.random() * 20 + "px";
   heart.style.animationDuration = 4 + Math.random() * 4 + "s";
   document.getElementById("hearts-bg").appendChild(heart);
-  setTimeout(() => heart.remove(), 8000);
+  setTimeout(function () { heart.remove(); }, 8000);
 }
 
 setInterval(createHeart, 400);
 
-// السماح بالدخول بالضغط على Enter
-document.getElementById("password-input").addEventListener("keypress", function(e) {
-  if (e.key === "Enter") checkPassword();
-});
-// ===== الصور والكلام اللي تحتها =====
-// غيّر الأسماء والكلام زي ما تحب، وضيف أو امسح براحتك
-const photos = [
-  { src: "images/1.jpg", text: "أول صورة لينا 💕 اكتب هنا أي كلام تحبه" },
-  { src: "images/2.jpg", text: "اليوم ده مبنساهوش أبدًا 🌹" },
-  { src: "images/3.jpg", text: "معاكي كل يوم أحلى من اللي قبله ❤" }
-];
-
-let currentPhoto = 0;
-
-function showGallery() {
-  document.getElementById("message-screen").classList.add("hidden");
-  document.getElementById("gallery-screen").classList.remove("hidden");
-  currentPhoto = 0;
-  updatePhoto();
-}
-
-function updatePhoto() {
-  const photo = document.getElementById("photo");
-  photo.style.animation = "none";
-  photo.offsetHeight;
-  photo.style.animation = "";
-  photo.src = photos[currentPhoto].src;
-  document.getElementById("photo-caption").textContent = photos[currentPhoto].text;
-  document.getElementById("photo-counter").textContent =
-    (currentPhoto + 1) + " / " + photos.length;
-
-  document.getElementById("prev-btn").disabled = (currentPhoto === 0);
-  document.getElementById("next-btn").disabled = (currentPhoto === photos.length - 1);
-}
-
-function prevPhoto() {
-  if (currentPhoto > 0) {
-    currentPhoto--;
-    updatePhoto();
+function createStars() {
+  const container = document.getElementById("stars-bg");
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement("span");
+    s.className = "star";
+    s.textContent = "✦";
+    s.style.left = Math.random() * 100 + "%";
+    s.style.top = Math.random() * 100 + "%";
+    s.style.fontSize = 8 + Math.random() * 14 + "px";
+    s.style.animationDuration = 2 + Math.random() * 3 + "s";
+    s.style.animationDelay = Math.random() * 3 + "s";
+    container.appendChild(s);
   }
 }
 
-function nextPhoto() {
-  if (currentPhoto < photos.length - 1) {
-    currentPhoto++;
-    updatePhoto();
-  }
-}
-// ===== الزوم =====
+createStars();
+
+// ================== الزوم على الصورة ==================
 let zoom = 1;
 let posX = 0, posY = 0;
 let dragging = false;
@@ -118,11 +242,11 @@ const lightboxArea = document.getElementById("lightbox-area");
 
 function applyTransform() {
   lightboxImg.style.transform =
-    `translate(${posX}px, ${posY}px) scale(${zoom})`;
+    "translate(" + posX + "px, " + posY + "px) scale(" + zoom + ")";
 }
 
-function openLightbox() {
-  lightboxImg.src = photos[currentPhoto].src;
+function openLightbox(src) {
+  lightboxImg.src = src;
   resetZoom();
   lightbox.classList.remove("hidden");
 }
@@ -138,7 +262,6 @@ function zoomIn() {
 
 function zoomOut() {
   zoom = Math.max(zoom - 0.5, 1);
-
   if (zoom === 1) { posX = 0; posY = 0; }
   applyTransform();
 }
@@ -148,13 +271,11 @@ function resetZoom() {
   applyTransform();
 }
 
-// زوم بعجلة الماوس
 lightboxArea.addEventListener("wheel", function (e) {
   e.preventDefault();
   if (e.deltaY < 0) zoomIn(); else zoomOut();
 }, { passive: false });
 
-// سحب الصورة بالماوس
 lightboxImg.addEventListener("mousedown", function (e) {
   if (zoom === 1) return;
   dragging = true;
@@ -171,12 +292,10 @@ window.addEventListener("mousemove", function (e) {
 });
 
 window.addEventListener("mouseup", function () {
-
   dragging = false;
   lightboxImg.classList.remove("dragging");
 });
 
-// اللمس على الموبايل: سحب بصباع + زوم بصباعين
 let lastDist = 0;
 
 lightboxArea.addEventListener("touchstart", function (e) {
@@ -204,7 +323,6 @@ lightboxArea.addEventListener("touchmove", function (e) {
     if (zoom === 1) { posX = 0; posY = 0; }
     applyTransform();
   } else if (e.touches.length === 1 && dragging) {
-
     posX = e.touches[0].clientX - startX;
     posY = e.touches[0].clientY - startY;
     applyTransform();
@@ -215,32 +333,6 @@ lightboxArea.addEventListener("touchend", function () {
   dragging = false;
 });
 
-// إغلاق بزرار Escape
 document.addEventListener("keydown", function (e) {
   if (e.key === "Escape") closeLightbox();
 });
-// ===== الموسيقى =====
-const music = document.getElementById("bg-music");
-const musicBtn = document.getElementById("music-btn");
-music.volume = 0.4; // مستوى الصوت من 0 لـ 1
-
-function startMusic() {
-  music.play().then(function () {
-    musicBtn.classList.remove("hidden");
-    musicBtn.textContent = "🔊";
-  }).catch(function () {
-    // لو المتصفح منع التشغيل، الزرار يظهر عشان تشغلها يدوي
-    musicBtn.classList.remove("hidden");
-    musicBtn.textContent = "🔇";
-  });
-}
-
-function toggleMusic() {
-  if (music.paused) {
-    music.play();
-    musicBtn.textContent = "🔊";
-  } else {
-    music.pause();
-    musicBtn.textContent = "🔇";
-  }
-};
