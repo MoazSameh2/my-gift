@@ -5,35 +5,73 @@
   font-family: 'Tahoma', sans-serif;
 }
 
+html {
+  background: #ff99ac;
+}
+
 body {
   min-height: 100vh;
-  background: linear-gradient(135deg, #ff6a88, #ff99ac, #fbc2eb);
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
 }
 
-#hearts-bg {
+/* الخلفية ثابتة وانتي بتسكرولي */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #ff6a88, #ff99ac, #fbc2eb);
+  z-index: -1;
+}
+
+/* قفل السكرول */
+html.locked,
+body.locked {
+  overflow: hidden;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ===== القلوب والنجوم ===== */
+#hearts-bg,
+#stars-bg {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none;
   z-index: 1;
+  overflow: hidden;
 }
 
 .heart {
   position: absolute;
   bottom: -50px;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 24px;
   animation: floatUp linear infinite;
 }
 
 @keyframes floatUp {
   0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-
   100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
 }
 
+.star {
+  position: absolute;
+  color: #fff;
+  text-shadow: 0 0 6px #fff, 0 0 14px rgba(255, 255, 255, 0.9);
+  animation: twinkle ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* ===== الأساسيات ===== */
 .screen {
   position: relative;
   z-index: 2;
@@ -44,18 +82,25 @@ body {
   padding: 20px;
 }
 
-.hidden {
-  display: none !important;
+#main-page {
+  position: relative;
+  z-index: 2;
+}
+
+.section {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
 .card {
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 20px;
   padding: 40px 30px;
   max-width: 560px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   animation: popIn 0.6s ease;
 }
 
@@ -63,7 +108,6 @@ body {
   from { transform: scale(0.8); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
-
 
 h1 {
   color: #d6336c;
@@ -77,26 +121,10 @@ p {
   line-height: 1.8;
 }
 
-input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #ff99ac;
-  border-radius: 10px;
-  font-size: 16px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-input:focus {
-  outline: none;
-  border-color: #d6336c;
-}
-
 button {
   background: linear-gradient(135deg, #ff6a88, #d6336c);
   color: white;
   border: none;
-
   padding: 12px 25px;
   border-radius: 10px;
   font-size: 16px;
@@ -112,120 +140,316 @@ button:hover {
   color: #d6336c;
   font-weight: bold;
   min-height: 20px;
+  margin-top: 15px;
+  margin-bottom: 0;
 }
 
-/* الصندوق الخارجي: بيخلي السكرول ناحية اليمين */
-.letter-box {
-  direction: ltr;
-  max-height: 350px;
-  overflow-y: auto;
-  border-radius: 12px;
-  background: rgba(255, 153, 172, 0.12);
-  margin-bottom: 20px;
-  scrollbar-width: thin;
-  scrollbar-color: #ff6a88 transparent;
-}
-
-.letter-box::-webkit-scrollbar {
-  width: 8px;
-}
-
-.letter-box::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.letter-box::-webkit-scrollbar-thumb {
-  background: #ff6a88;
-  border-radius: 10px;
-}
-
-/* النص نفسه: عربي من اليمين للشمال */
-.typewriter {
-  direction: rtl;
-  text-align: right;
-  white-space: pre-wrap;
-  padding: 15px 18px;
-  font-size: 19px;
-
-  line-height: 2;
-  color: #444;
-}
-/* شكل السكرول (كروم وسفاري) */
-.typewriter::-webkit-scrollbar {
-  width: 6px;
-}
-
-.typewriter::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.typewriter::-webkit-scrollbar-thumb {
-  background: #ff6a88;
-  border-radius: 10px;
-}
-
-.surprise-text {
-  font-size: 20px;
+/* ===== بوكسات اليوم والشهر ===== */
+.date-hint {
   color: #d6336c;
   font-weight: bold;
-  margin-top: 15px;
-  animation: popIn 0.5s ease;
+  margin-bottom: 5px;
 }
+
+.date-inputs {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  direction: ltr;
+  margin: 20px 0 25px;
+}
+
+.date-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-box input {
+  width: 84px;
+  height: 84px;
+  font-size: 38px;
+  font-weight: bold;
+  text-align: center;
+  color: #d6336c;
+  border: 3px solid transparent;
+  border-radius: 22px;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, #ff6a88, #fbc2eb) border-box;
+  box-shadow: 0 8px 20px rgba(214, 51, 108, 0.25);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.date-box input::placeholder {
+  color: #ffc2d1;
+}
+
+.date-box input:focus {
+  outline: none;
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 0 0 4px rgba(255, 106, 136, 0.25),
+              0 12px 25px rgba(214, 51, 108, 0.4);
+}
+
+.date-box label {
+  color: #d6336c;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.slash {
+  font-size: 44px;
+  color: #d6336c;
+  padding-bottom: 34px;
+}
+
+.date-inputs.shake {
+  animation: shake 0.4s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-8px); }
+  80% { transform: translateX(8px); }
+}
+
+/* ===== ظهور العناصر واحدة واحدة ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== الصور ===== */
+.section-title {
+  text-align: center;
+  color: #fff;
+  font-size: 26px;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.memory {
+  background: rgba(255, 255, 255, 0.92);
+  padding: 14px 14px 20px;
+  border-radius: 20px;
+  margin-bottom: 45px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.18);
+}
+
 .photo-frame {
   width: 100%;
   border-radius: 15px;
   overflow: hidden;
-  border: 4px solid #fff;
-  box-shadow: 0 8px 20px rgba(214, 51, 108, 0.35);
-  margin-bottom: 15px;
   background: #ffe3ea;
 }
 
 .photo-frame img {
   width: 100%;
-  max-height: 350px;
+  max-height: 450px;
   object-fit: contain;
   display: block;
-  animation: popIn 0.5s ease;
+  cursor: zoom-in;
 }
 
 .caption {
   font-size: 18px;
   color: #d6336c;
   font-weight: bold;
-  min-height: 60px;
   line-height: 1.8;
+  text-align: center;
+  margin-top: 14px;
 }
 
-.gallery-controls {
+/* ===== كارت الموسيقى ===== */
+.music-card {
+  background: linear-gradient(160deg, #3b1c4a, #7b2a6a);
+  border-radius: 25px;
+  padding: 35px 25px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.disc {
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ff99ac 0 18%, #222 19% 100%);
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-size: 0;
+  border: 4px solid #ff6a88;
+  box-shadow: 0 0 25px rgba(255, 106, 136, 0.6);
+  animation: spin 6s linear infinite;
+  animation-play-state: paused;
+}
+
+.disc.spinning {
+  animation-play-state: running;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.music-label {
+  color: #ffd1dc;
+  font-size: 15px;
+}
+
+.music-card h3 {
+  color: #fff;
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.song-artist {
+  color: #ff99ac;
+  margin-bottom: 20px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  direction: ltr;
+  margin-bottom: 20px;
+}
+
+#play-btn {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.seek-wrap {
+  flex: 1;
+}
+
+#seek {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(
+    to right,
+    #ff6a88 var(--fill, 0%),
+    rgba(255, 255, 255, 0.25) var(--fill, 0%)
+  );
+}
+
+#seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255, 106, 136, 0.9);
+  transition: transform 0.15s;
+}
+
+#seek:active::-webkit-slider-thumb {
+  transform: scale(1.3);
+}
+
+#seek::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255, 106, 136, 0.9);
+}
+
+#seek::-moz-range-track {
+  background: transparent;
+}
+
+.times {
+  display: flex;
   justify-content: space-between;
-  gap: 10px;
+  margin-top: 10px;
+  color: #fff;
+  font-size: 13px;
 }
 
-
-.gallery-controls button {
-  padding: 10px 16px;
-  font-size: 14px;
+.song-note {
+  color: #ffd1dc;
+  font-size: 16px;
+  margin-bottom: 0;
 }
 
-#photo-counter {
-  color: #888;
-  font-size: 14px;
-}
-.photo-frame img {
-  cursor: zoom-in;
+/* ===== الرسالة (آخر الصفحة) ===== */
+.end {
+  text-align: center;
+  padding-bottom: 100px;
 }
 
-/* الزرار لما يبقى معطل (أول أو آخر صورة) */
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none !important;
+.open-hint {
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  margin-bottom: 20px;
 }
 
-/* شاشة الزوم */
+#open-letter-btn {
+  font-size: 20px;
+  padding: 16px 34px;
+  border-radius: 16px;
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(214, 51, 108, 0.6); }
+  70% { box-shadow: 0 0 0 18px rgba(214, 51, 108, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(214, 51, 108, 0); }
+}
+
+.letter {
+  white-space: pre-wrap;
+  text-align: right;
+  font-size: 19px;
+  line-height: 2;
+  color: #444;
+  min-height: 60px;
+}
+
+.final {
+  text-align: center;
+  margin-top: 45px;
+}
+
+.final h2 {
+  color: #fff;
+  font-size: 26px;
+  margin-bottom: 25px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== شاشة الزوم ===== */
 #lightbox {
   position: fixed;
   top: 0; left: 0;
@@ -246,7 +470,6 @@ button:disabled {
   height: 100%;
   overflow: hidden;
   display: flex;
-
   align-items: center;
   justify-content: center;
   touch-action: none;
@@ -279,7 +502,6 @@ button:disabled {
   position: absolute;
   bottom: 25px;
   left: 50%;
-
   transform: translateX(-50%);
   z-index: 101;
   display: flex;
@@ -289,16 +511,4 @@ button:disabled {
 .lightbox-controls button {
   padding: 10px 16px;
   font-size: 18px;
-}
-#music-btn {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  z-index: 50;
-  width: 45px;
-  height: 45px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
