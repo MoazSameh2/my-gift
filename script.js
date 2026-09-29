@@ -16,14 +16,13 @@ const loveLetterText = `حبيبتي...
 const photos = [
   { src: "images/1.jpg", text: "ياختي حلوه سكرر 🙈💖" },
   { src: "images/2.jpg", text: "يلهوي علي الضحكه ياناسسسس🥹🥹💖" },
-  { src: "images/3.jpg", text: "اقدر علي اي حاجه في الدنيا الا عيونك 🥲🥲💖" },
-  { src: "images/4.jpg", text: "أجمل ذكرياتنا مع بعض 💖" }
 ];
 
 // ================== قفل وفتح السكرول ==================
 let locked = false;
 
 function lockScroll() {
+
   locked = true;
   document.documentElement.classList.add("locked");
   document.body.classList.add("locked");
@@ -219,19 +218,57 @@ function finishLetter() {
   window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
 }
 
-// ================== القلوب والنجوم ==================
+const heartColors = ["#ff6a88", "#ff99ac", "#fbc2eb", "#d6336c", "#ffffff"];
+
+// ================== القلوب ==================
 function createHeart() {
   const heart = document.createElement("div");
   heart.classList.add("heart");
-  heart.textContent = "❤";
+
+  const size = 16 + Math.random() * 30;
+  const color = heartColors[Math.floor(Math.random() * heartColors.length)];
+
   heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = 15 + Math.random() * 20 + "px";
-  heart.style.animationDuration = 4 + Math.random() * 4 + "s";
+  heart.style.width = size + "px";
+  heart.style.height = size + "px";
+  heart.style.animationDuration = 5 + Math.random() * 4 + "s";
+  heart.style.setProperty("--wobble", (Math.random() * 60 - 30) + "px");
+
+  heart.innerHTML =
+    '<svg viewBox="0 0 32 29.6" width="100%" height="100%">' +
+    '<path fill="' + color + '" d="M23.6,0c-3.4,0-6.3,2.1-7.6,5C14.7,2.1,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.2,16,21.2s16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/>' +
+    '</svg>';
+
   document.getElementById("hearts-bg").appendChild(heart);
-  setTimeout(function () { heart.remove(); }, 8000);
+  setTimeout(function () { heart.remove(); }, 9000);
 }
 
 setInterval(createHeart, 400);
+
+// قلوب زيادة على الشمال بس
+function createHeartLeft() {
+  const heart = document.createElement("div");
+  heart.classList.add("heart");
+
+  const size = 16 + Math.random() * 22;
+  const color = heartColors[Math.floor(Math.random() * heartColors.length)];
+
+  heart.style.left = Math.random() * 30 + "vw"; // بس من 0% لـ 30% من عرض الشاشة (الشمال)
+  heart.style.width = size + "px";
+  heart.style.height = size + "px";
+  heart.style.animationDuration = 5 + Math.random() * 4 + "s";
+  heart.style.setProperty("--wobble", (Math.random() * 60 - 30) + "px");
+
+  heart.innerHTML =
+    '<svg viewBox="0 0 32 29.6" width="100%" height="100%">' +
+    '<path fill="' + color + '" d="M23.6,0c-3.4,0-6.3,2.1-7.6,5C14.7,2.1,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.2,16,21.2s16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"/>' +
+    '</svg>';
+
+  document.getElementById("hearts-bg").appendChild(heart);
+  setTimeout(function () { heart.remove(); }, 9000);
+}
+
+setInterval(createHeartLeft, 800);
 
 function createStars() {
   const container = document.getElementById("stars-bg");
